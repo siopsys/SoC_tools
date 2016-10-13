@@ -1,8 +1,17 @@
 #!/usr/bin/env python
 
-import requests
+import pip
 import json
-from bs4 import BeautifulSoup
+
+try:
+    import requests
+except ImportError:
+    pip.main(['install', 'requests'])
+
+try :
+    from bs4 import BeautifulSoup
+except ImportError:
+    pip.main(['install','beautifulsoup4'])
 
 def checkIp1():
     check=str(IP)
@@ -15,7 +24,7 @@ def checkIp1():
 
     print '\ncomments:\n'
     url = 'https://www.abuseipdb.com/check/' + check
-    myheaders = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:49.0) Gecko/20100101 Firefox/49.0'}
+    myheaders = {'User-Agent': 'Mozilla/5.0'}
     source_code = requests.get(url, headers=myheaders).text
     soup = BeautifulSoup(source_code, "lxml")
     for table_data in soup.find_all('td', {'data-title': 'Comment'}):
@@ -40,7 +49,7 @@ def report():
         23 IoT Targeted
 Enter Category number from the above list: ''')
     comment = raw_input('Enter a comment: ')
-    r=requests.get('https://www.abuseipdb.com/report/json?key= &category=' +category+'&comment=' +comment+'&ip=' +check)
+    r=requests.get('https://www.abuseipdb.com/report/json?key=[APIKEYGOESHERE]&category=' +category+'&comment=' +comment+'&ip=' +check)
     loaded_content = json.loads(r.content)
     print (json.dumps(loaded_content, sort_keys=True, indent=4))
 
