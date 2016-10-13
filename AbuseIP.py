@@ -2,19 +2,32 @@
 
 import requests
 import json
-
+from bs4 import BeautifulSoup
 
 def checkIp1():
     check=str(IP)
-    r=requests.get('https://www.abuseipdb.com/check/' +check+'/json?key=[APIKEYGOESHERE]') 
+    r=requests.get('https://www.abuseipdb.com/check/' +check+'/json?key=[APIKEYGOESHERE]')
     loaded_content = json.loads(r.content)
     print (json.dumps(loaded_content, sort_keys=True, indent=4))
 
+## comments require the user-agent to not be 'python/requests', bit of a hack around as the return displayes the html.
+### comments by JT
+
+    print '\ncomments:\n'
+    url = 'https://www.abuseipdb.com/check/' + check
+    myheaders = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:49.0) Gecko/20100101 Firefox/49.0'}
+    source_code = requests.get(url, headers=myheaders).text
+    soup = BeautifulSoup(source_code, "lxml")
+    for table_data in soup.find_all('td', {'data-title': 'Comment'}):
+        print(table_data)
+
+    print ('\nweb link: https://www.abuseipdb.com/check/' +check)
+
 def report():
     check=str(IP)
-    category = raw_input(''' 
+    category = raw_input('''
         3 Fraud Orders
-        4 DDoS Attack 
+        4 DDoS Attack
         9 Open Proxy
         10 Web Spam
         11 Email Spam
