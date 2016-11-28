@@ -1,34 +1,23 @@
 #!/usr/bin/env python
 
-import pip
 import json
-
-try:
-    import requests
-except ImportError:
-    pip.main(['install', 'requests'])
-
-try :
-    from bs4 import BeautifulSoup
-except ImportError:
-    pip.main(['install','beautifulsoup4'])
+import requests
+from bs4 import BeautifulSoup
 
 def checkIp1():
     check=str(IP)
-    r=requests.get('https://www.abuseipdb.com/check/' +check+'/json?key=[APIKEYGOESHERE]')
+    r=requests.get('https://www.abuseipdb.com/check/' +check+'/json?key=<YOURAPIHERE>&days=365')
     loaded_content = json.loads(r.content)
     print (json.dumps(loaded_content, sort_keys=True, indent=4))
-
-## comments require the user-agent to not be 'python/requests', bit of a hack around as the return displayes the html.
-### comments by JT
 
     print '\ncomments:\n'
     url = 'https://www.abuseipdb.com/check/' + check
     myheaders = {'User-Agent': 'Mozilla/5.0'}
     source_code = requests.get(url, headers=myheaders).text
     soup = BeautifulSoup(source_code, "lxml")
+
     for table_data in soup.find_all('td', {'data-title': 'Comment'}):
-        print(table_data)
+        print(table_data.get_text()).replace('\n', ' ')
 
     print ('\nweb link: https://www.abuseipdb.com/check/' +check)
 
@@ -49,7 +38,7 @@ def report():
         23 IoT Targeted
 Enter Category number from the above list: ''')
     comment = raw_input('Enter a comment: ')
-    r=requests.get('https://www.abuseipdb.com/report/json?key=[APIKEYGOESHERE]&category=' +category+'&comment=' +comment+'&ip=' +check)
+    r=requests.get('https://www.abuseipdb.com/report/json?key=<YOURAPIHERE>&category=' +category+'&comment=' +comment+'&ip=' +check)
     loaded_content = json.loads(r.content)
     print (json.dumps(loaded_content, sort_keys=True, indent=4))
 
